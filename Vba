@@ -1,6 +1,6 @@
 Sub Run()
 
-    Dim i, cou, row, col, rox, cox As Integer
+    Dim i, cou, row, col, rox, cox, min, hour As Integer
     Dim dd, mm, yyyy As Integer
     Dim dat As Date
 
@@ -24,6 +24,13 @@ Sub Run()
                 row = row + 1
             Else
                 If Worksheets("Transacciones").Cells(row, col + 5).Value = "Entrada" And Worksheets("Transacciones").Cells(row + 1, col + 5).Value = "Salida" Then
+                    'RepetirDatosEmpleado
+                    Worksheets("HorasNocturnas").Cells(rox, cox).Copy
+                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox)
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 1).Copy
+                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox + 1)
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 2).Copy
+                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox + 2)
                     'FechaEntrada
                     dd = Mid(Worksheets("Transacciones").Cells(row, col).Value, 5, 2)
                     mm = Mid(Worksheets("Transacciones").Cells(row, col).Value, 8, 2)
@@ -31,7 +38,15 @@ Sub Run()
                     dat = DateSerial(yyyy, mm, dd)
                     Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value = dat
                     'HoraEntrada
-                    Worksheets("HorasNocturnas").Cells(rox, cox + 4).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
+                    hour = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    min = Right(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    If min <= 10 Then
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & hour & ", 00, 00)"
+                    Else
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & hour + 1 & ", 00, 00)"
+                    End If
+                    Worksheets("HorasNocturnas").Range("I8").Value = hour
+                    Worksheets("HorasNocturnas").Range("J8").Value = min
                     
                     row = row + 1
                     
@@ -42,9 +57,16 @@ Sub Run()
                     dat = DateSerial(yyyy, mm, dd)
                     Worksheets("HorasNocturnas").Cells(rox, cox + 5).Value = dat
                     'HoraSalida
-                    Worksheets("HorasNocturnas").Cells(rox, cox + 6).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
-
+                    hour = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    min = Right(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    If min < 50 Then
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & hour & ", 00, 00)"
+                    Else
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & hour + 1 & ", 00, 00)"
+                    End If
+                    
                     rox = rox + 1
+                    
                 End If
             
                 row = row + 1
@@ -55,6 +77,10 @@ Sub Run()
         
         row = row + 1
         
+        'LimpiarUtimoRegistroExtra
+        Worksheets("HorasNocturnas").Cells(rox, cox).Value = ""
+        Worksheets("HorasNocturnas").Cells(rox, cox + 1).Value = ""
+        Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = ""
     Next i
         
         Worksheets("HorasNocturnas").Range("J20").Value = row
