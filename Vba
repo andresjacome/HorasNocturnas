@@ -1,0 +1,67 @@
+Sub Run()
+
+    Dim i, cou, row, col, rox, cox As Integer
+    Dim dd, mm, yyyy As Integer
+    Dim dat As Date
+
+    row = 2
+    col = 1
+    rox = 8
+    cox = 1
+    cou = 0
+
+    For i = 1 To 10
+        Do
+            
+            If Worksheets("Transacciones").Cells(row, col).Value = "Empleado:" Then
+                'CodigoEmpleado
+                Worksheets("HorasNocturnas").Cells(rox, cox).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
+                'CedulaEmpleado
+                Worksheets("Transacciones").Cells(row + 1, col + 2).Copy
+                ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox, cox + 1)
+                'NombreEmpleado
+                Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = Worksheets("Transacciones").Cells(row, col + 2).Value
+                row = row + 1
+            Else
+                If Worksheets("Transacciones").Cells(row, col + 5).Value = "Entrada" Then
+                    'FechaEntrada
+                    dd = Mid(Worksheets("Transacciones").Cells(row, col).Value, 5, 2)
+                    mm = Mid(Worksheets("Transacciones").Cells(row, col).Value, 8, 2)
+                    yyyy = Mid(Worksheets("Transacciones").Cells(row, col).Value, 11, 4)
+                    dat = DateSerial(yyyy, mm, dd)
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value = dat
+                    'HoraEntrada
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 4).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
+                    cou = cou + 1
+                ElseIf Worksheets("Transacciones").Cells(row, col + 5).Value = "Salida" Then
+                    'FechaSalida
+                    dd = Mid(Worksheets("Transacciones").Cells(row, col).Value, 5, 2)
+                    mm = Mid(Worksheets("Transacciones").Cells(row, col).Value, 8, 2)
+                    yyyy = Mid(Worksheets("Transacciones").Cells(row, col).Value, 11, 4)
+                    dat = DateSerial(yyyy, mm, dd)
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 5).Value = dat
+                    'HoraSalida
+                    Worksheets("HorasNocturnas").Cells(rox, cox + 6).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
+                    cou = cou + 1
+                    If cou = 2 Then
+                        rox = rox + 1
+                    End If
+                    cou = 0
+                End If
+            
+                row = row + 1
+                
+            End If
+        
+        Loop Until Worksheets("Transacciones").Cells(row, col).Value = "Total de Transacciones por Empleado:"
+        
+        row = row + 1
+        
+    Next i
+        
+        Worksheets("HorasNocturnas").Range("J20").Value = row
+        Worksheets("HorasNocturnas").Range("J21").Value = col
+        Worksheets("HorasNocturnas").Range("J23").Value = rox
+        Worksheets("HorasNocturnas").Range("J24").Value = cox
+
+End Sub
