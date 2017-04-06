@@ -17,7 +17,8 @@ Sub Run()
     hni = 0
     hnit = 0
     
-    For i = 1 To 10
+    'For i = 1 To 10
+    Do
         Do
             
             If Worksheets("Transacciones").Cells(row, col).Value = "Empleado:" Then
@@ -123,6 +124,6 @@ Sub Run()
         Worksheets("HorasNocturnas").Cells(rox, cox).Value = ""
         Worksheets("HorasNocturnas").Cells(rox, cox + 1).Value = ""
         Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = ""
-    Next i
-
+    'Next i
+    Loop Until Worksheets("Transacciones").Cells(row, col).Value = "Totales del Reporte"
 End Sub
