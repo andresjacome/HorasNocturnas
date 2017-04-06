@@ -1,11 +1,11 @@
 Sub Run()
 
-    Dim i, row, col, rox, cox, min, tiin, tout, hni, hnit As Integer
+    Dim i, row, col, rox, cox, rot, min, tiin, tout, hni, hnit As Integer
     Dim dd, mm, yyyy As Integer
     Dim dat As Date
 
     'row, col: controlar filas y columnas en la Hoja Transacciones
-    'rox, cox: controlar filas y columnas en la Hoja HorasNocturnas
+    'rox, cox, rot: controlar filas y columnas en la Hoja HorasNocturnas
     'min, tiin (timein), tout (timeout): extraer hora de entrada y salida
     'dd, mm, yyyy, dat: extraer dia, mes y ano de registros
     
@@ -13,6 +13,7 @@ Sub Run()
     col = 1
     rox = 8
     cox = 1
+    rot = 8
     hni = 0
     hnit = 0
     
@@ -22,11 +23,14 @@ Sub Run()
             If Worksheets("Transacciones").Cells(row, col).Value = "Empleado:" Then
                 'CodigoEmpleado
                 Worksheets("HorasNocturnas").Cells(rox, cox).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
+                Worksheets("HorasNocturnas").Cells(rot, cox + 9).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
                 'CedulaEmpleado
                 Worksheets("Transacciones").Cells(row + 1, col + 2).Copy
                 ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox, cox + 1)
+                ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rot, cox + 10)
                 'NombreEmpleado
                 Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = Worksheets("Transacciones").Cells(row, col + 2).Value
+                Worksheets("HorasNocturnas").Cells(rot, cox + 11).Value = Worksheets("Transacciones").Cells(row, col + 2).Value
                 row = row + 1
             Else
                 If Worksheets("Transacciones").Cells(row, col + 5).Value = "Entrada" And Worksheets("Transacciones").Cells(row + 1, col + 5).Value = "Salida" Then
@@ -99,7 +103,7 @@ Sub Run()
                         End If
                         Worksheets("HorasNocturnas").Cells(rox, cox + 7).Value = hni
                     End If
-                    
+                    hnit = hnit + hni
                     hni = 0
                     rox = rox + 1
                     
@@ -110,7 +114,9 @@ Sub Run()
             End If
         
         Loop Until Worksheets("Transacciones").Cells(row, col).Value = "Total de Transacciones por Empleado:"
-        
+        Worksheets("HorasNocturnas").Cells(rot, cox + 12).Value = hnit
+        hnit = 0
+        rot = rot + 1
         row = row + 1
         
         'LimpiarUtimoRegistroExtra
