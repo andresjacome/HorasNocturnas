@@ -1,15 +1,21 @@
 Sub Run()
 
-    Dim i, cou, row, col, rox, cox, min, hour As Integer
+    Dim i, row, col, rox, cox, min, tiin, tout, hni, hnit As Integer
     Dim dd, mm, yyyy As Integer
     Dim dat As Date
 
+    'row, col: controlar filas y columnas en la Hoja Transacciones
+    'rox, cox: controlar filas y columnas en la Hoja HorasNocturnas
+    'min, tiin (timein), tout (timeout): extraer hora de entrada y salida
+    'dd, mm, yyyy, dat: extraer dia, mes y ano de registros
+    
     row = 2
     col = 1
     rox = 8
     cox = 1
-    cou = 0
-
+    hni = 0
+    hnit = 0
+    
     For i = 1 To 10
         Do
             
@@ -24,7 +30,7 @@ Sub Run()
                 row = row + 1
             Else
                 If Worksheets("Transacciones").Cells(row, col + 5).Value = "Entrada" And Worksheets("Transacciones").Cells(row + 1, col + 5).Value = "Salida" Then
-                    'RepetirDatosEmpleado
+                    'RepetirDatosEmpleadoEnCadaRegistro
                     Worksheets("HorasNocturnas").Cells(rox, cox).Copy
                     ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox)
                     Worksheets("HorasNocturnas").Cells(rox, cox + 1).Copy
@@ -38,15 +44,14 @@ Sub Run()
                     dat = DateSerial(yyyy, mm, dd)
                     Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value = dat
                     'HoraEntrada
-                    hour = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    tiin = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
                     min = Right(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
                     If min <= 10 Then
-                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & hour & ", 00, 00)"
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & tiin & ", 00, 00)"
                     Else
-                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & hour + 1 & ", 00, 00)"
+                        tiin = tiin + 1
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 4).Formula = "=TIME(" & tiin & ", 00, 00)"
                     End If
-                    Worksheets("HorasNocturnas").Range("I8").Value = hour
-                    Worksheets("HorasNocturnas").Range("J8").Value = min
                     
                     row = row + 1
                     
@@ -57,14 +62,45 @@ Sub Run()
                     dat = DateSerial(yyyy, mm, dd)
                     Worksheets("HorasNocturnas").Cells(rox, cox + 5).Value = dat
                     'HoraSalida
-                    hour = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
+                    tout = Left(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
                     min = Right(Worksheets("Transacciones").Cells(row, col + 1).Value, 2)
                     If min < 50 Then
-                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & hour & ", 00, 00)"
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & tout & ", 00, 00)"
                     Else
-                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & hour + 1 & ", 00, 00)"
+                        tout = tout + 1
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 6).Formula = "=TIME(" & tout & ", 00, 00)"
                     End If
                     
+                    'HorasNocturnas
+                    If tiin = 0 Then tiin = 24
+                    If tout = 0 Then tout = 24
+                    If Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value = Worksheets("HorasNocturnas").Cells(rox, cox + 5).Value Then
+                        If (tiin < 19 And tout > 19) Then
+                            hni = tout - 19
+                        ElseIf tiin >= 19 Then
+                            hni = tout - tiin
+                        End If
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 7).Value = hni
+                    Else
+                        If tiin < 19 Then
+                            If tout <= 6 Then
+                                hni = (24 - 19) + tout
+                            ElseIf tout = 24 Then
+                                hni = (24 - 19)
+                            Else
+                                hni = 11
+                            End If
+                        Else
+                            If tout <= 6 Then
+                                hni = (24 - tiin) + tout
+                            Else
+                                hni = (24 - tiin) + 6
+                            End If
+                        End If
+                        Worksheets("HorasNocturnas").Cells(rox, cox + 7).Value = hni
+                    End If
+                    
+                    hni = 0
                     rox = rox + 1
                     
                 End If
@@ -82,10 +118,5 @@ Sub Run()
         Worksheets("HorasNocturnas").Cells(rox, cox + 1).Value = ""
         Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = ""
     Next i
-        
-        Worksheets("HorasNocturnas").Range("J20").Value = row
-        Worksheets("HorasNocturnas").Range("J21").Value = col
-        Worksheets("HorasNocturnas").Range("J23").Value = rox
-        Worksheets("HorasNocturnas").Range("J24").Value = cox
 
 End Sub
