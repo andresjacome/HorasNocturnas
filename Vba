@@ -17,6 +17,7 @@ Sub Run()
     hni = 0
     hnit = 0
     
+    MsgBox "El cáculo tomará aproximadamente  03[min]00[seg]"
     'For i = 1 To 10
     Do
         Do
@@ -26,9 +27,8 @@ Sub Run()
                 Worksheets("HorasNocturnas").Cells(rox, cox).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
                 Worksheets("HorasNocturnas").Cells(rot, cox + 9).Value = Worksheets("Transacciones").Cells(row, col + 1).Value
                 'CedulaEmpleado
-                Worksheets("Transacciones").Cells(row + 1, col + 2).Copy
-                ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox, cox + 1)
-                ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rot, cox + 10)
+                Worksheets("HorasNocturnas").Cells(rox, cox + 1).Value = Worksheets("Transacciones").Cells(row + 1, col + 2).Value
+                Worksheets("HorasNocturnas").Cells(rot, cox + 10).Value = Worksheets("Transacciones").Cells(row + 1, col + 2).Value
                 'NombreEmpleado
                 Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = Worksheets("Transacciones").Cells(row, col + 2).Value
                 Worksheets("HorasNocturnas").Cells(rot, cox + 11).Value = Worksheets("Transacciones").Cells(row, col + 2).Value
@@ -36,12 +36,9 @@ Sub Run()
             Else
                 If Worksheets("Transacciones").Cells(row, col + 5).Value = "Entrada" And Worksheets("Transacciones").Cells(row + 1, col + 5).Value = "Salida" Then
                     'RepetirDatosEmpleadoEnCadaRegistro
-                    Worksheets("HorasNocturnas").Cells(rox, cox).Copy
-                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox)
-                    Worksheets("HorasNocturnas").Cells(rox, cox + 1).Copy
-                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox + 1)
-                    Worksheets("HorasNocturnas").Cells(rox, cox + 2).Copy
-                    ActiveSheet.Paste Destination:=Worksheets("HorasNocturnas").Cells(rox + 1, cox + 2)
+                    Worksheets("HorasNocturnas").Cells(rox + 1, cox).Value = Worksheets("HorasNocturnas").Cells(rox, cox).Value
+                    Worksheets("HorasNocturnas").Cells(rox + 1, cox + 1).Value = Worksheets("HorasNocturnas").Cells(rox, cox + 1).Value
+                    Worksheets("HorasNocturnas").Cells(rox + 1, cox + 2).Value = Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value
                     'FechaEntrada
                     dd = Mid(Worksheets("Transacciones").Cells(row, col).Value, 5, 2)
                     mm = Mid(Worksheets("Transacciones").Cells(row, col).Value, 8, 2)
@@ -115,9 +112,10 @@ Sub Run()
             End If
         
         Loop Until Worksheets("Transacciones").Cells(row, col).Value = "Total de Transacciones por Empleado:"
+
         Worksheets("HorasNocturnas").Cells(rot, cox + 12).Value = hnit
+        If hnit <> 0 Then rot = rot + 1
         hnit = 0
-        rot = rot + 1
         row = row + 1
         
         'LimpiarUtimoRegistroExtra
@@ -126,4 +124,8 @@ Sub Run()
         Worksheets("HorasNocturnas").Cells(rox, cox + 2).Value = ""
     'Next i
     Loop Until Worksheets("Transacciones").Cells(row, col).Value = "Totales del Reporte"
+    
+    ActiveSheet.EnableCalculation = False
+    ActiveSheet.EnableCalculation = True
+    MsgBox "Cálculo finalizado"
 End Sub
