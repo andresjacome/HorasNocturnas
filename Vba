@@ -83,9 +83,15 @@ Sub Run()
                         If Month(Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value) = mon + 1 And Day(Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value) = 21 Then
                             hni = 0
                         Else
-                            If (tiin < 19 And tout > 19) Then
+                            If (tiin < 6 And tout <= 6) Then
+                                hni = tout - tiin
+                            ElseIf (tiin < 6 And tout > 6 And tout <= 19) Then
+                                hni = 6 - tiin
+                            ElseIf (tiin < 6 And tout > 19) Then
+                                hni = (6 - tiin) + (tout - 19)
+                            ElseIf (tiin >= 6 And tiin < 19 And tout > 19) Then
                                 hni = tout - 19
-                            ElseIf tiin >= 19 Then
+                            ElseIf (tiin >= 19) Then
                                 hni = tout - tiin
                             End If
                         End If
