@@ -1,13 +1,13 @@
 Sub Run()
 
     Dim i, row, col, rox, cox, rot, min, tiin, tout, hni, hnit As Integer
-    Dim dd, mm, yyyy As Integer
+    Dim dd, mm, yyyy, mon As Integer
     Dim dat As Date
 
     'row, col: controlar filas y columnas en la Hoja Transacciones
     'rox, cox, rot: controlar filas y columnas en la Hoja HorasNocturnas
     'min, tiin (timein), tout (timeout): extraer hora de entrada y salida
-    'dd, mm, yyyy, dat: extraer dia, mes y ano de registros
+    'dd, mm, mon, yyyy, dat: extraer dia, mes y ano de registros
     
     row = 2
     col = 1
@@ -17,8 +17,9 @@ Sub Run()
     hni = 0
     hnit = 0
     
-    MsgBox "El cáculo tomará aproximadamente  03[min]00[seg]"
-    'For i = 1 To 10
+    MsgBox "El cáculo tomará aproximadamente:  03[min]00[seg]"
+    'For i = 1 To 30
+    mon = Mid(Worksheets("Transacciones").Cells(row + 1, col).Value, 8, 2)
     Do
         Do
             
@@ -76,11 +77,17 @@ Sub Run()
                     'HorasNocturnas
                     If tiin = 0 Then tiin = 24
                     If tout = 0 Then tout = 24
+                         
                     If Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value = Worksheets("HorasNocturnas").Cells(rox, cox + 5).Value Then
-                        If (tiin < 19 And tout > 19) Then
-                            hni = tout - 19
-                        ElseIf tiin >= 19 Then
-                            hni = tout - tiin
+                        'DescartarHorasNocturnasDelDia21
+                        If Month(Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value) = mon + 1 And Day(Worksheets("HorasNocturnas").Cells(rox, cox + 3).Value) = 21 Then
+                            hni = 0
+                        Else
+                            If (tiin < 19 And tout > 19) Then
+                                hni = tout - 19
+                            ElseIf tiin >= 19 Then
+                                hni = tout - tiin
+                            End If
                         End If
                         Worksheets("HorasNocturnas").Cells(rox, cox + 7).Value = hni
                     Else
